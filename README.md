@@ -32,7 +32,7 @@ To deploy the sample scenario, take the following steps:
 - Clone the repo and log into your Azure subscription
 - Create a new or use an existing FHIR environment
 - Deploy the data importer app (Azure Function)
-- Deploy the sample apps including a SMART on FHIR app
+- Deploy the sample apps including one dashboard and two SMART on FHIR apps
 
 # Clone the repo and log into your Azure subscription
 
@@ -87,7 +87,7 @@ Get-Host | Select-Object Version
 
 # Deploy the Data Importer App (Azure Function)
 
-Run the following PowerShell scripts. You can modify the setting for scripts and replace the client application id and secrent.
+Run the PowerShell scripts to deploy a data ingestion app called Importer, which is a Storage trigger Azure Function. You can modify the setting for scripts and replace the client application id and secrent.
 
 ```PowerShell
 #Settings for scripts
@@ -108,8 +108,9 @@ $rg = New-AzResourceGroup -Name $rgname  -Location $location -Force
 #Deploy the data importer app
 New-AzResourceGroupDeployment -TemplateUri $importerTemplate -ResourceGroupName $rgname -appNameImporter $appNameImporter  -fhirServiceUrl $fhirserviceurl -aadServiceClientId $aadServiceClientId -aadServiceClientSecret $aadServiceClientSecret
 ```
+Once the importer app is deployed, you can upload FHIR bundles (json files) to the storage container named "fhirimport" in the storage account.
 
-# Deploy the Sample apps including a SMART on FHIR app
+# Deploy the Sample apps including one Dashboard and Two SMART on FHIR Apps
 
 Coming soon.
 
