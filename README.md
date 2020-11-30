@@ -96,24 +96,23 @@ Note: The data importer app and sample apps are desgined to work with a FHIR env
 Run the PowerShell scripts to deploy a data ingestion app called Importer, which is a Storage trigger Azure Function. You can modify the setting for scripts and replace the client application id and secret.
 
 ```PowerShell
-#Settings for scripts
+#Update the parameters with your settings
 $aadServiceClientId="Your client app id here"
 $aadServiceClientSecret="your client app secret here"
 $fhirsubid="your subscription id here"
 $fhirrgname="resource group where the FHIR service is"
-$fhirserviceurl="full url of your FHIR service, FHIR PaaS or FHIROSS server"
-$rgname=$fhirrgname+"new" 
+$fhirserviceurl="full url of your FHIR service, FHIR PaaS or FHIR OSS server"
 $location="your new resource group location, e.g. westus2"
-$appNameImporter = $fhirservicemame+"importer"
-$importerTemplate="https://github.com/microsoft/fhir-server-samples/blob/master/deploy/templates/azuredeploy-importer-1.json" 
-
-#Create a new resouce group or set the object to an existing resource group if already exists (must be in the same region)
-Set-AzContext -SubscriptionId $fhirsubid
-$rg = New-AzResourceGroup -Name $rgname  -Location $location -Force 
 
 #Deploy the data importer app
+$rgname=$fhirrgname+"new" 
+$appNameImporter = $fhirservicemame+"importer"
+$importerTemplate="https://github.com/microsoft/fhir-server-samples/blob/master/deploy/templates/azuredeploy-importer-1.json" 
+Set-AzContext -SubscriptionId $fhirsubid
+$rg = New-AzResourceGroup -Name $rgname  -Location $location -Force 
 New-AzResourceGroupDeployment -TemplateUri $importerTemplate -ResourceGroupName $rgname -appNameImporter $appNameImporter  -fhirServiceUrl $fhirserviceurl -aadServiceClientId $aadServiceClientId -aadServiceClientSecret $aadServiceClientSecret
 ```
+
 Once the importer app is deployed, you can upload FHIR bundles (json files) to the storage container named "fhirimport" in the storage account.
 
 # Deploy the Sample apps including one Dashboard and Two SMART on FHIR Apps
