@@ -107,7 +107,7 @@ $location="your new resource group location, e.g. westus2"
 #Deploy the data importer app
 $rgname=$fhirrgname+"new" 
 $appNameImporter = $fhirservicemame+"importer"
-$importerTemplate="https://github.com/microsoft/fhir-server-samples/blob/master/deploy/templates/azuredeploy-importer-1.json" 
+$importerTemplate="https://raw.githubusercontent.com/zxue/fhir-server-samples/master/deploy/templates/azuredeploy-importer-1.json" 
 Set-AzContext -SubscriptionId $fhirsubid
 $rg = New-AzResourceGroup -Name $rgname  -Location $location -Force 
 New-AzResourceGroupDeployment -TemplateUri $importerTemplate -ResourceGroupName $rgname -appNameImporter $appNameImporter  -fhirServiceUrl $fhirserviceurl -aadServiceClientId $aadServiceClientId -aadServiceClientSecret $aadServiceClientSecret
