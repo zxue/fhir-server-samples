@@ -81,13 +81,19 @@ Get-Host | Select-Object Version
 
 # Create a New or Use an Existing FHIR Environment
 
-[Quickstart: Deploy Azure API for FHIR using Azure portal](https://docs.microsoft.com/en-us/azure/healthcare-apis/fhir-paas-portal-quickstart)
+You can use an existing FHIR environment or create a new one to run the sample apps. To create a new FHIR environment, refer to the documentation for more detail. 
 
-[Microsoft Open Source FHIR Server Deployment](https://github.com/microsoft/fhir-server/blob/master/docs/DefaultDeployment.md)
+[Quickstart: Deploy Azure API for FHIR](https://docs.microsoft.com/en-us/azure/healthcare-apis/fhir-paas-portal-quickstart)
+
+[Quickstart: Deploy Microsoft Open Source FHIR Server](https://github.com/microsoft/fhir-server/blob/master/docs/DefaultDeployment.md)
+
+To use an existing FHIR environment, Azure API for FHIR or OSS FHIR server, make sure that you have registered a client application. For OSS FHIR server that has security enabled, make sure that you have registered a server application, as described in the documents.
+
+Note: The data importer app and sample apps are desgined to work with a FHIR environment secured by Azure AD. If your OSS FHIR server has security disabled, follow the steps in the document to enable the security in order to run the sample apps.
 
 # Deploy the Data Importer App (Azure Function)
 
-Run the PowerShell scripts to deploy a data ingestion app called Importer, which is a Storage trigger Azure Function. You can modify the setting for scripts and replace the client application id and secrent.
+Run the PowerShell scripts to deploy a data ingestion app called Importer, which is a Storage trigger Azure Function. You can modify the setting for scripts and replace the client application id and secret.
 
 ```PowerShell
 #Settings for scripts
