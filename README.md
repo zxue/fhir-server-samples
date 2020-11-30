@@ -27,7 +27,16 @@ Install-Module AzureAd
 
 # Deployment
 
-To deploy the sample scenario, first clone this git repo and find the deployment scripts folder:
+To deploy the sample scenario, take the following steps:
+
+- Clone the repo and log into your Azure subscription
+- Create a new or use an existing FHIR environment
+- Deploy the data importer app (Azure Function)
+- Deploy the sample apps including a SMART on FHIR app
+
+# Clone the repo and log into your Azure subscription
+
+First clone this git repo and find the deployment scripts folder:
 
 ```PowerShell
 git clone https://github.com/Microsoft/fhir-server-samples
@@ -37,7 +46,7 @@ cd fhir-server-samples/deploy/scripts
 Log into your Azure subscription:
 
 ```PowerShell
-Login-AzAccount
+Connect-AzAccount
 ```
 
 Connect to Azure AD with:
@@ -45,32 +54,64 @@ Connect to Azure AD with:
 ```PowerShell
 Connect-AzureAd -TenantDomain <AAD TenantDomain>
 ```
-
-**NOTE** The connection to Azure AD can be made using a different tenant domain than the one tied to your Azure subscription. If you don't have privileges to create app registrations, users, etc. in your Azure AD tenant, you can [create a new one](https://docs.microsoft.com/azure/active-directory/develop/quickstart-create-new-tenant), which will just be used for demo identities, etc.
-
-Then deploy the scenario with the Open Source FHIR Server for Azure:
+If you have multiple Azure subscriptions, you can choose a specific subscription.
 
 ```PowerShell
-.\Create-FhirServerSamplesEnvironment.ps1 -EnvironmentName <ENVIRONMENTNAME> -UsePaaS $false
+Get-AzSubscription
+Set-AzContext -SubscriptionId "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+Get-AzContext -SubscriptionName "Your Subscription Name"
+Get-AzContext
 ```
 
-or the managed Azure API for FHIR:
+Note that the PowerShell scripts and Azure ARM templates are tested with the following versions.
+- PowerShell: 5.1.19041.610
+- Azure PowerShell Az Module: 4.7.0
+
+You can verify PowerShell versions by running the following command lines.
+
+```
+#check PowerShell Az versions
+Get-InstalledModule -Name Az -AllVersions
+
+#check PowerShell versions
+$PSVersionTable.PSVersion 
+Get-Host | Select-Object Version
+
+```
+
+# Create a New or Use an Existing FHIR Environment
+
+[Quickstart: Deploy Azure API for FHIR using Azure portal](https://docs.microsoft.com/en-us/azure/healthcare-apis/fhir-paas-portal-quickstart)
+
+[Microsoft Open Source FHIR Server Deployment](https://github.com/microsoft/fhir-server/blob/master/docs/DefaultDeployment.md)
+
+# Deploy the Data Importer App (Azure Function)
+
+Run the following PowerShell scripts. You can modify the setting for scripts and replace the client application id and secrent.
 
 ```PowerShell
-.\Create-FhirServerSamplesEnvironment.ps1 -EnvironmentName <ENVIRONMENTNAME> -UsePaaS $true
+#Settings for scripts
+$aadServiceClientId="Your client app id here"
+$aadServiceClientSecret="your client app secret here"
+$fhirsubid="your subscription id here"
+$fhirrgname="resource group where the FHIR service is"
+$fhirserviceurl="full url of your FHIR service, FHIR PaaS or FHIROSS server"
+$rgname=$fhirrgname+"new" 
+$location="your new resource group location, e.g. westus2"
+$appNameImporter = $fhirservicemame+"importer"
+$importerTemplate="https://github.com/microsoft/fhir-server-samples/blob/master/deploy/templates/azuredeploy-importer-1.json" 
+
+#Create a new resouce group or set the object to an existing resource group if already exists (must be in the same region)
+Set-AzContext -SubscriptionId $fhirsubid
+$rg = New-AzResourceGroup -Name $rgname  -Location $location -Force 
+
+#Deploy the data importer app
+New-AzResourceGroupDeployment -TemplateUri $importerTemplate -ResourceGroupName $rgname -appNameImporter $appNameImporter  -fhirServiceUrl $fhirserviceurl -aadServiceClientId $aadServiceClientId -aadServiceClientSecret $aadServiceClientSecret
 ```
 
-and to enable `$export`:
+# Deploy the Sample apps including a SMART on FHIR app
 
-```PowerShell
-.\Create-FhirServerSamplesEnvironment.ps1 -EnvironmentName <ENVIRONMENTNAME> -UsePaaS $true -EnableExport $true
-```
-
-To delete the senario:
-
-```PowerShell
-.\Delete-FhirServerSamplesEnvironment.ps1 -EnvironmentName <ENVIRONMENTNAME>
-```
+Coming soon.
 
 # Contributing
 
