@@ -104,12 +104,12 @@ $aadServiceClientSecret="your client app secret here"
 $fhirsubid="your subscription id here"
 $fhirrgname="resource group where the FHIR service is"
 $fhirserviceurl="full url of your FHIR service, FHIR PaaS or FHIR OSS server"
-$fhirservicemame="name of your FHIR service, the first part of the full url"
+$environmentname="a short, unique string used as prefix"
 $location="your new resource group location, e.g. westus2"
 
 #Deploy the data importer app
 $rgname=$fhirrgname+"new" 
-$appNameImporter = $fhirservicemame+"importer"
+$appNameImporter = $environmentname+"importer"
 $importerTemplate="https://raw.githubusercontent.com/zxue/fhir-server-samples/master/deploy/templates/azuredeploy-importer-1.json" 
 Set-AzContext -SubscriptionId $fhirsubid
 $rg = New-AzResourceGroup -Name $rgname  -Location $location -Force 
