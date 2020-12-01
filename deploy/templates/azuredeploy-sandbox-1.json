@@ -122,8 +122,6 @@
         "location": "[resourceGroup().location]",
         "appServicePlanName": "[concat(variables('environmentName'),'-asp')]",
         "environmentName": "[if(empty(parameters('environmentName')), concat('fhirdemo', uniqueString(resourceGroup().id)), parameters('environmentName'))]",
-        "storageAccountName": "[replace(concat(toLower(substring(parameters('environmentName'), 0, min(length(parameters('environmentName')), 18))), 'dashsa'),'-','')]",
-        "storageAccountid": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "fhirDashboardJSName": "[concat(variables('environmentName'),'dash')]",
         "webAppsuffix": ".azurewebsites.net",
         "growthChartName": "[concat(variables('environmentName'),'growth')]",
@@ -146,22 +144,6 @@
             "properties": {
                 "name": "[variables('appServicePlanName')]"
             }
-        },
-        {
-            "type": "Microsoft.Storage/storageAccounts",
-            "name": "[variables('storageAccountName')]",
-            "tags": {
-                "FhirServerSolution": "[parameters('solutionType')]"
-            },
-            "apiVersion": "2019-06-01",
-            "location": "[variables('location')]",
-            "kind": "StorageV2",
-            "sku": {
-                "name": "[parameters('storageAccountType')]"
-            },
-            "properties": {
-                "accessTier": "Hot"
-                            }
         },
         {
             "name": "[concat(variables('fhirDashboardJSName'),'-deploy')]",
