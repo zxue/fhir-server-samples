@@ -1,0 +1,283 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environmentName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Name of the demo environment. Will be used as prefix for resources."
+            },
+            "maxLength": 12
+        },
+        "appServicePlanSku": {
+            "type": "string",
+            "allowedValues": [
+                "F1",
+                "D1",
+                "B1",
+                "B2",
+                "B3",
+                "S1",
+                "S2",
+                "S3",
+                "P1",
+                "P2",
+                "P3",
+                "P4"
+            ],
+            "defaultValue": "S1",
+            "metadata": {
+                "description": "Shared App Service Plan for Dashboard and SMART on FHIR apps"
+            }
+        },
+            "fhirServiceUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "fhir service url, api or oss server"
+            }
+        },
+        "aadAuthority": {
+            "type": "string",
+            "defaultValue": "https://login.microsoftonline.com/common",
+            "metadata": {
+                "description": "OAuth Authority for FHIR server"
+            }
+        },
+        "aadFhirServerAudience": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Audience (resource) of the FHIR API app registration"
+            }
+        },
+        "aadDashboardClientId": {
+            "type": "string",
+            "metadata": {
+                "description": "AAD client application id for accessing FHIR server"
+            }
+        },
+        "aadDashboardClientSecret": {
+            "type": "string",
+            "metadata": {
+                "description": "AAD client secret"
+            }
+        },
+        "aadServiceClientId": {
+            "type": "string",
+            "metadata": {
+                "description": "AAD service client application id for accessing FHIR server"
+            }
+        },
+        "aadServiceClientSecret": {
+            "type": "string",
+            "metadata": {
+                "description": "AAD service client secret"
+            }
+        },
+        "smartAppClientId": {
+            "type": "string",
+            "defaultValue": "my_web_app",
+            "metadata": {
+                "description": "The client id for SMART on FHIR Apps"
+            }
+        },
+        "fhirDashboardJSTemplateUrl": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/Microsoft/fhir-server-samples/master/deploy/templates/azuredeploy-dashboard-js.json",
+            "metadata": {
+                "description": "URL for FHIR dashboard (JS edition) template"
+            }
+        },
+        "smartAppTemplateUrl": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "URL for SMART on FHIR app template"
+            }
+        },
+        "fhirDashboardRepositoryUrl": {
+            "type": "string",
+            "defaultValue": "https://github.com/Microsoft/fhir-server-samples",
+            "metadata": {
+                "description": "URL for FHIR dashboard repository"
+            }
+        },
+        "fhirDashboardRepositoryBranch": {
+            "type": "string",
+            "defaultValue": "master",
+            "metadata": {
+                "description": "Repository branch for FHIR Dashboard"
+            }
+        },
+        "deployDashboardSourceCode": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "If true, dashboard source code will be deployed from repo"
+            }
+        },
+        "solutionType": {
+            "type": "string",
+            "defaultValue": "FhirServerSamples",
+            "metadata": {
+                "description": "The type of the solution"
+            }
+        },
+                "storageAccountType": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Standard_RAGRS"
+            ],
+            "metadata": {
+                "description": "Storage Account type"
+            }
+        }
+    },
+    "variables": {
+        "location": "[resourceGroup().location]",
+        "appServicePlanName": "[concat(variables('environmentName'),'-asp')]",
+        "environmentName": "[if(empty(parameters('environmentName')), concat('fhirdemo', uniqueString(resourceGroup().id)), parameters('environmentName'))]",
+        "storageAccountName": "[replace(concat(toLower(substring(parameters('environmentName'), 0, min(length(parameters('environmentName')), 18))), 'dashsa'),'-','')]",
+        "storageAccountid": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+        "fhirDashboardJSName": "[concat(variables('environmentName'),'dash')]",
+        "growthChartName": "[concat(variables('environmentName'),'growth')]",
+        "medicationsName": "[concat(variables('environmentName'),'meds')]",
+        "baseUri": "[deployment().properties.templateLink.uri]",
+        "smartAppTemplateUrl": "[if(empty(parameters('smartAppTemplateUrl')), uri(variables('baseUri'), 'azuredeploy-smart-app.json'), parameters('smartAppTemplateUrl'))]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2015-08-01",
+            "name": "[variables('appServicePlanName')]",
+            "type": "Microsoft.Web/serverfarms",
+            "tags": {
+                "FhirServerSolution": "[parameters('solutionType')]"
+            },
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "[parameters('appServicePlanSku')]"
+            },
+            "properties": {
+                "name": "[variables('appServicePlanName')]"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('storageAccountName')]",
+            "tags": {
+                "FhirServerSolution": "[parameters('solutionType')]"
+            },
+            "apiVersion": "2019-06-01",
+            "location": "[variables('location')]",
+            "kind": "StorageV2",
+            "sku": {
+                "name": "[parameters('storageAccountType')]"
+            },
+            "properties": {
+                "accessTier": "Hot"
+                            }
+        },
+        {
+            "name": "[concat(variables('fhirDashboardJSName'),'-deploy')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-08-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
+            ],
+            "properties": {
+                "templateLink": {
+                    "uri": "[parameters('fhirDashboardJSTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "siteName": {
+                        "value": "[variables('fhirDashboardJSName')]"
+                    },
+                    "appServicePlanName": {
+                        "value": "[variables('appServicePlanName')]"
+                    },
+                    "appServicePlanResourceGroup": {
+                        "value": "[resourceGroup().name]"
+                    },
+                    "aadAuthority": {
+                        "value": "[parameters('aadAuthority')]"
+                    },
+                    "aadClientId": {
+                        "value": "[parameters('aadDashboardClientId')]"
+                    },
+                    "aadClientSecret": {
+                        "value": "[parameters('aadDashboardClientSecret')]"
+                    },
+                    "fhirServerUrl": {
+                        "value": "[parameters('fhirServiceUrl')]"
+                    },
+                    "repositoryUrl": {
+                        "value": "[parameters('fhirDashboardRepositoryUrl')]"
+                    },
+                    "repositoryBranch": {
+                        "value": "[parameters('fhirDashboardRepositoryBranch')]"
+                    },
+                    "growthChartAppLaunchUrl": {
+                        "value": "[concat('https://', variables('growthChartName'), variables('webAppSuffix'), '/launch.html')]"
+                    },
+                    "medicationsAppLaunchUrl": {
+                        "value": "[concat('https://', variables('medicationsName'), variables('webAppSuffix'), '/launch.html')]"
+                    }
+                },
+                "mode": "incremental"
+            }
+        },
+        {
+            "name": "[concat(variables('growthChartName'),'-deploy')]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[concat(resourceGroup().name, '-sof')]",
+            "apiVersion": "2019-08-01",
+            "properties": {
+                "templateLink": {
+                    "uri": "[variables('smartAppTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "siteName": {
+                        "value": "[variables('growthChartName')]"
+                    },
+                    "clientId": {
+                        "value": "[parameters('smartAppClientId')]"
+                    },
+                    "imageName": {
+                        "value": "growth-chart-app:v1.0.0"
+                    }
+                },
+                "mode": "incremental"
+            }
+        },
+        {
+            "name": "[concat(variables('medicationsName'),'-deploy')]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[concat(resourceGroup().name, '-sof')]",
+            "apiVersion": "2019-08-01",
+            "properties": {
+                "templateLink": {
+                    "uri": "[variables('smartAppTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "siteName": {
+                        "value": "[variables('medicationsName')]"
+                    },
+                    "clientId": {
+                        "value": "[parameters('smartAppClientId')]"
+                    },
+                    "imageName": {
+                        "value": "medications-app:v1.0.0"
+                    }
+                },
+                "mode": "incremental"
+            }
+        }
+    ]
+}
