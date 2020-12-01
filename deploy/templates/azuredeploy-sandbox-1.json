@@ -44,13 +44,6 @@
                 "description": "OAuth Authority for FHIR server"
             }
         },
-        "aadFhirServerAudience": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Audience (resource) of the FHIR API app registration"
-            }
-        },
         "aadDashboardClientId": {
             "type": "string",
             "metadata": {
@@ -61,18 +54,6 @@
             "type": "string",
             "metadata": {
                 "description": "AAD client secret"
-            }
-        },
-        "aadServiceClientId": {
-            "type": "string",
-            "metadata": {
-                "description": "AAD service client application id for accessing FHIR server"
-            }
-        },
-        "aadServiceClientSecret": {
-            "type": "string",
-            "metadata": {
-                "description": "AAD service client secret"
             }
         },
         "smartAppClientId": {
