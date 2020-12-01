@@ -65,7 +65,7 @@
         },
         "fhirDashboardJSTemplateUrl": {
             "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/Microsoft/fhir-server-samples/master/deploy/templates/azuredeploy-dashboard-js.json",
+            "defaultValue": "https://raw.githubusercontent.com/Microsoft/fhir-server-samples/master/deploy/templates/azuredeploy-fhirdashboard-js.json",
             "metadata": {
                 "description": "URL for FHIR dashboard (JS edition) template"
             }
