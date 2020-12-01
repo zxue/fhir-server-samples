@@ -87,13 +87,15 @@ You can use an existing FHIR environment or create a new one to run the sample a
 
 [Quickstart: Deploy Microsoft Open Source FHIR Server](https://github.com/microsoft/fhir-server/blob/master/docs/DefaultDeployment.md)
 
-To use an existing FHIR environment, Azure API for FHIR or OSS FHIR server, make sure that you have registered a client application. For OSS FHIR server that has security enabled, make sure that you have registered a server application, as described in the documents.
+To use an existing FHIR environment, Azure API for FHIR or OSS FHIR server, make sure that you have registered a client application and Access tokens and Id tokens are selected. For OSS FHIR server that has security enabled, make sure that you have registered a server application, as described in the documents. Ensure that the client app has been assigned roles or permissions to access FHIR resources. 
 
-Note: The data importer app and sample apps are desgined to work with a FHIR environment secured by Azure AD. If your OSS FHIR server has security disabled, follow the steps in the document to enable the security in order to run the sample apps.
+Note: The data importer app and sample apps are desgined to work with a FHIR environment secured by Azure AD. If your OSS FHIR server has security disabled, enable the security in order to run the sample apps. 
 
 # Deploy the Data Importer App (Azure Function)
 
-Run the PowerShell scripts to deploy a data ingestion app called Importer, which is a Storage trigger Azure Function. You can modify the setting for scripts and replace the client application id and secret.
+Run the PowerShell scripts to deploy a data ingestion app called importer, which is a Storage trigger Azure Function. You can modify the settings in the scripts and replace the client application id and secret. 
+
+Note that the importer app uses the client app or service principal to access the FHIR resources. 
 
 ```PowerShell
 #Update the parameters with your settings
