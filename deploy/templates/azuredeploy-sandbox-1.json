@@ -125,6 +125,7 @@
         "storageAccountName": "[replace(concat(toLower(substring(parameters('environmentName'), 0, min(length(parameters('environmentName')), 18))), 'dashsa'),'-','')]",
         "storageAccountid": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "fhirDashboardJSName": "[concat(variables('environmentName'),'dash')]",
+        "webAppsuffix": ".azurewebsites.net",
         "growthChartName": "[concat(variables('environmentName'),'growth')]",
         "medicationsName": "[concat(variables('environmentName'),'meds')]",
         "baseUri": "[deployment().properties.templateLink.uri]",
