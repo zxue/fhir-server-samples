@@ -104,6 +104,7 @@ $aadServiceClientSecret="your client app secret here"
 $fhirsubid="your subscription id here"
 $fhirrgname="resource group where the FHIR service is"
 $fhirserviceurl="full url of your FHIR service, FHIR PaaS or FHIR OSS server"
+$fhirservicemame="name of your FHIR service, the first part of the full url"
 $location="your new resource group location, e.g. westus2"
 
 #Deploy the data importer app
